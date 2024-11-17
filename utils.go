@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -113,6 +114,19 @@ func BookValidator(input BookStruct) error {
 	return nil
 }
 
+func RequestValidator(input NeedBook) error {
+	if input.MemberId > 999999 || input.MemberId < 100000 {
+		return errors.New("invalid MemberID - It must be of 6 digits")
+	}
+	if len(input.Password) < 8 {
+		return errors.New("invalid Password - It must be greater or equal to 8 letter")
+	}
+	if input.BookId > 99999 || input.BookId < 10000 {
+		return errors.New("invalid BookId - It must be of 5 digits")
+	}
+	return nil
+}
+
 func SetMemberToStruct(member MemberStruct) (MemberStructDB, error) {
 	Id, err := IdGenerator(6)
 	if err != nil {
@@ -149,5 +163,45 @@ func SetBookToStruct(newBook BookStruct) (BookStructDB, error) {
 		Author:   newBook.Author,
 		Genre:    newBook.Genre,
 		Quantity: newBook.Quantity,
+		Count:    newBook.Quantity,
 	}, nil
+}
+
+func FindMember(Id int) (MemberStructDB, error) {
+	memberCol := FindColl("Member")
+	var member MemberStructDB
+	err := memberCol.MemberDataCollection.FindOne(context.Background(), bson.M{"memberId": Id}).Decode(&member)
+	if err != nil {
+		return MemberStructDB{}, errors.New("member not registered")
+	}
+	return member, nil
+}
+
+func FindBook(Id int) (BookStructDB, error) {
+	bookCol := FindColl("Book")
+	var book BookStructDB
+	err := bookCol.MemberDataCollection.FindOne(context.Background(), bson.M{"bookId": Id}).Decode(&book)
+	if err != nil {
+		return BookStructDB{}, errors.New("book not found")
+	}
+	return book, nil
+}
+
+func getBorrowId(memberId int, bookId int) (BorrowedBookRecord, error) {
+
+	Id, err := IdGenerator(7)
+	if err != nil {
+		return BorrowedBookRecord{}, err
+	}
+	BorrowedBook := BorrowedBookRecord{
+		RecordId:  Id,
+		BookId:    bookId,
+		MemberId:  memberId,
+		IssueDate: time.Now().Truncate(24 * time.Hour),
+		DueDate:   time.Now().Truncate(24 * time.Hour).Add(7 * time.Hour),
+		Fine:      0.0,
+		Status:    false,
+	}
+
+	return BorrowedBook, nil
 }

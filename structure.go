@@ -20,7 +20,7 @@ type MemberStructDB struct {
 	Contact       int                `json:"contact,omitempty" bson:"contact,omitempty"`
 	Email         string             `json:"email,omitempty" bson:"email,omitempty"`
 	Password      string             `json:"password,omitempty" bson:"password,omitempty"`
-	BorrowedBooks []string           `json:"borrowedBooks,omitempty" bson:"borrowedBooks,omitempty"`
+	BorrowedBooks []int              `json:"borrowedBooks,omitempty" bson:"borrowedBooks,omitempty"`
 	CreatedAt     time.Time          `json:"createdAt,omitempty" bson:"createdAt,omitempty"`
 }
 
@@ -50,6 +50,13 @@ type BorrowedBookRecord struct {
 	DueDate    time.Time          `json:"dueDate,omitempty" bson:"dueDate,omitempty"`
 	ReturnDate time.Time          `json:"returnDate,omitempty" bson:"returnDate,omitempty"`
 	Fine       float32            `json:"fine,omitempty" bson:"fine,omitempty"`
+	Status     bool               `json:"status,omitempty" bson:"status,omitempty"`
+}
+
+type NeedBook struct {
+	MemberId int    `json:"memberId,omitempty" bson:"memberId,omitempty"`
+	Password string `json:"password,omitempty" bson:"password,omitempty"`
+	BookId   int    `json:"bookId,omitempty" bson:"bookId,omitempty"`
 }
 
 type Response struct {
