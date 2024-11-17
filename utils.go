@@ -67,9 +67,6 @@ func GetCollection(name string) *mongo.Collection {
 	return Client.Database("LMS").Collection(name)
 }
 
-// 1,00,000 --> 8,99,999 + 1,00,000 --> 18,99,999
-// 10,00,000 99,99,999
-// generate random integer ID of specified digits
 func IdGenerator(digits int) (int, error) {
 
 	if digits <= 0 {
@@ -123,6 +120,19 @@ func RequestValidator(input NeedBook) error {
 	}
 	if input.BookId > 99999 || input.BookId < 10000 {
 		return errors.New("invalid BookId - It must be of 5 digits")
+	}
+	return nil
+}
+
+func ReturnValidator(input ReturnBook) error {
+	if input.MemberId > 999999 || input.MemberId < 100000 {
+		return errors.New("invalid MemberID - It must be of 6 digits")
+	}
+	if len(input.Password) < 8 {
+		return errors.New("invalid Password - It must be greater or equal to 8 letter")
+	}
+	if input.RecordId > 9999999 || input.RecordId < 1000000 {
+		return errors.New("invalid RecordId - It must be of 7 digits")
 	}
 	return nil
 }
@@ -187,6 +197,16 @@ func FindBook(Id int) (BookStructDB, error) {
 	return book, nil
 }
 
+func FindRecord(Id int) (BorrowedBookRecord, error){
+	borrowedBookCol := FindColl("BorrowedBook")
+	var BorrowedBook BorrowedBookRecord
+	err := borrowedBookCol.MemberDataCollection.FindOne(context.Background(), bson.M{"recordId": Id}).Decode(&BorrowedBook)
+	if err != nil {
+		return BorrowedBookRecord{}, errors.New("RecordId not found")
+	}
+	return BorrowedBook, nil
+}
+
 func getBorrowId(memberId int, bookId int) (BorrowedBookRecord, error) {
 
 	Id, err := IdGenerator(7)
@@ -205,3 +225,5 @@ func getBorrowId(memberId int, bookId int) (BorrowedBookRecord, error) {
 
 	return BorrowedBook, nil
 }
+
+

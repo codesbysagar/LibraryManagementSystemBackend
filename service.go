@@ -85,16 +85,16 @@ func IssueBook(issueBookRequest NeedBook) (any, error) {
 
 	memberCol := FindColl("Member")
 	filter := bson.M{"memberId": issueBookRequest.MemberId}
-	update := bson.M{"$push": bson.M{"borrowedBooks" : received.RecordId}}
-	_, err = memberCol.MemberDataCollection.UpdateOne(context.Background(),filter, update)
+	update := bson.M{"$push": bson.M{"borrowedBooks": received.RecordId}}
+	_, err = memberCol.MemberDataCollection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		return nil, err
 	}
 
 	bookCol := FindColl("Book")
 	filter = bson.M{"bookId": issueBookRequest.BookId}
-	update = bson.M{"$inc": bson.M{"count" : -1}}
-	_, err = bookCol.MemberDataCollection.UpdateOne(context.Background(),filter, update)
+	update = bson.M{"$inc": bson.M{"count": -1}}
+	_, err = bookCol.MemberDataCollection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		return nil, err
 	}
@@ -105,4 +105,68 @@ func IssueBook(issueBookRequest NeedBook) (any, error) {
 
 }
 
+func ReturnBookService(returnBook ReturnBook) (any, error) {
 
+	member, err := FindMember(returnBook.MemberId)
+	if err != nil {
+		return nil, err
+	}
+	if member.Password != returnBook.Password {
+		return nil, errors.New("incorrect password")
+	}
+
+	Borrow, err := FindRecord(returnBook.RecordId)
+	if err != nil {
+		return nil, err
+	}
+
+	if Borrow.Status {
+		return nil, errors.New("book is not already returned")
+	}
+
+	Book, err := FindBook(Borrow.BookId)
+	if err != nil {
+		return nil, err
+	}
+
+	var index int
+	for i, value := range member.BorrowedBooks {
+		if value == returnBook.RecordId {
+			index = i
+		}
+	}
+
+	member.BorrowedBooks = append(member.BorrowedBooks[:index], member.BorrowedBooks[index+1:]...)
+
+	memberCol := FindColl("Member")
+	filter := bson.M{"memberId": member.MemberId}
+	update := bson.M{"$set": bson.M{"borrowedBooks": member.BorrowedBooks}}
+	_, err = memberCol.MemberDataCollection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return nil, err
+	}
+
+	bookCol := FindColl("Book")
+	filter = bson.M{"bookId": Book.BookId}
+	update = bson.M{"$inc": bson.M{"count": +1}}
+	_, err = bookCol.MemberDataCollection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return nil, err
+	}
+
+	borrowCol := FindColl("BorrowedBook")
+	filter = bson.M{"recordId": Borrow.RecordId}
+	update = bson.M{
+		"$set": bson.M{
+			"status":     true,
+			"fine":       143,
+			"returnDate": time.Now().Truncate(24 * time.Hour),
+		},
+	}
+	_, err = borrowCol.MemberDataCollection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return nil, err
+	}
+
+	return "Book has been returned Successfully", nil
+}

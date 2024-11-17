@@ -59,6 +59,12 @@ type NeedBook struct {
 	BookId   int    `json:"bookId,omitempty" bson:"bookId,omitempty"`
 }
 
+type ReturnBook struct {
+	MemberId int    `json:"member_id,omitempty" bson:"member_id,omitempty"`
+	Password string `json:"password,omitempty" bson:"password,omitempty"`
+	RecordId int    `json:"record_id,omitempty" bson:"record_id,omitempty"`
+}
+
 type Response struct {
 	Status  string      `json:"status,omitempty"`
 	Message string      `json:"message,omitempty"`

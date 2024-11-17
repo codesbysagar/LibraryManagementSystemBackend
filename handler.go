@@ -45,10 +45,9 @@ func CreateMember(w http.ResponseWriter, r *http.Request) {
 	w.Write(rd)
 }
 
-func AddNewBook(w http.ResponseWriter, r *http.Request){
+func AddNewBook(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	
 	var newBook BookStruct
 	err := json.NewDecoder(r.Body).Decode(&newBook)
 	if err != nil {
@@ -85,8 +84,7 @@ func AddNewBook(w http.ResponseWriter, r *http.Request){
 	w.Write(rd)
 }
 
-
-func GetBook(w http.ResponseWriter, r *http.Request){
+func GetBook(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var issueBookRequest NeedBook
@@ -100,7 +98,7 @@ func GetBook(w http.ResponseWriter, r *http.Request){
 	}
 
 	err = RequestValidator(issueBookRequest)
-	if err!= nil {
+	if err != nil {
 		res := Response{Status: "NOT-OK", Message: err.Error()}
 		w.WriteHeader(http.StatusBadRequest)
 		r, _ := json.Marshal(res)
@@ -123,10 +121,40 @@ func GetBook(w http.ResponseWriter, r *http.Request){
 
 }
 
-func BackBook(w http.ResponseWriter, r *http.Request){
+func BackBook(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	
+	var returnBook ReturnBook
+	err := json.NewDecoder(r.Body).Decode(&returnBook)
+	if err != nil {
+		res := Response{Status: "NOT-OK", Message: err.Error()}
+		w.WriteHeader(http.StatusBadRequest)
+		r, _ := json.Marshal(res)
+		w.Write(r)
+		return
+	}
+
+	err = ReturnValidator(returnBook)
+	if err != nil {
+		res := Response{Status: "NOT-OK", Message: err.Error()}
+		w.WriteHeader(http.StatusBadRequest)
+		r, _ := json.Marshal(res)
+		w.Write(r)
+		return
+	}
+
+	received, err := ReturnBookService(returnBook)
+	if err != nil {
+		res := Response{Status: "NOT-OK", Message: err.Error()}
+		w.WriteHeader(http.StatusBadRequest)
+		r, _ := json.Marshal(res)
+		w.Write(r)
+		return
+	}
+
+	res := Response{Status: "OK", Message: received.(string)}
+	w.WriteHeader(http.StatusOK)
+	rd, _ := json.Marshal(res)
+	w.Write(rd)
+
 }
-
-
