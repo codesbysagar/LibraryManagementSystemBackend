@@ -22,6 +22,8 @@ type ConfigMain struct {
 
 var Config ConfigMain
 
+// var GenreSlice = []string{"Horror", "Romance", "Fiction", "Self-Help", "Novel", "Fantasy"}
+
 // loading mongoURI
 func LoadConfig() {
 	mongoUri := os.Getenv("MONGODB")
@@ -95,16 +97,57 @@ func MemberValidator(input MemberStruct) error {
 	return nil
 }
 
+func BookValidator(input BookStruct) error {
+	if input.Title == "" {
+		return errors.New("book Title missing")
+	}
+	if input.Author == "" {
+		return errors.New("book Author missing")
+	}
+	if input.Genre == "" {
+		return errors.New("book Genre missing")
+	}
+	if input.Quantity <= 0 {
+		return errors.New("book Quantity cannot but equal or less than 0")
+	}
+	return nil
+}
+
 func SetMemberToStruct(member MemberStruct) (MemberStructDB, error) {
 	Id, err := IdGenerator(6)
 	if err != nil {
 		return MemberStructDB{}, err
 	}
+
+	// tempCol := NewMemberData("Member")
+	// var result bson.M
+	// err = tempCol.MemberDataCollection.FindOne(context.Background(),bson.M{"memberId": Id}).Decode(&result)
+	// if err!= nil {
+	// 	if err == mongo.ErrNoDocuments {
+	// 		fmt.Println("Document")
+	// 	}
+	// }
+
 	return MemberStructDB{
-		FullName: member.FullName,
-		Contact:  member.Contact,
-		Email:    member.Email,
-		Password: member.Password,
-		MemberId: Id,
+		FullName:      member.FullName,
+		Contact:       member.Contact,
+		Email:         member.Email,
+		Password:      member.Password,
+		BorrowedBooks: nil,
+		MemberId:      Id,
+	}, nil
+}
+
+func SetBookToStruct(newBook BookStruct) (BookStructDB, error) {
+	Id, err := IdGenerator(5)
+	if err != nil {
+		return BookStructDB{}, err
+	}
+	return BookStructDB{
+		BookId:   Id,
+		Title:    newBook.Title,
+		Author:   newBook.Author,
+		Genre:    newBook.Genre,
+		Quantity: newBook.Quantity,
 	}, nil
 }

@@ -11,21 +11,38 @@ type MemberData struct {
 	MemberDataCollection *mongo.Collection
 }
 
-func NewMemberData(collectionName string) MemberData{
+func NewMemberData(collectionName string) MemberData {
 	return MemberData{MemberDataCollection: GetCollection(collectionName)}
 }
 
 func CreateMemberService(member MemberStruct) (any, error) {
 
 	resp := make(map[string]interface{})
-	finalMember , err := SetMemberToStruct(member)
-	if err!= nil {
+	finalMember, err := SetMemberToStruct(member)
+	if err != nil {
 		return nil, err
 	}
 
 	mCollection := NewMemberData("Member")
 	finalMember.CreatedAt = time.Now()
 	received, err := mCollection.MemberDataCollection.InsertOne(context.Background(), finalMember)
+	if err != nil {
+		return nil, err
+	}
+	resp["_Id"] = received.InsertedID
+	return resp, nil
+}
+
+func AddBookService(newBook BookStruct) (any, error) {
+
+	resp := make(map[string]interface{})
+	finalBook, err := SetBookToStruct(newBook)
+	if err != nil {
+		return nil, err
+	}
+
+	mCollection := NewMemberData("Book")
+	received, err := mCollection.MemberDataCollection.InsertOne(context.Background(), finalBook)
 	if err != nil {
 		return nil, err
 	}
