@@ -15,6 +15,7 @@ func CreateMember(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		r, _ := json.Marshal(res)
 		w.Write(r)
+		return
 	}
 
 	err = MemberValidator(memberData)
@@ -23,6 +24,7 @@ func CreateMember(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		r, _ := json.Marshal(res)
 		w.Write(r)
+		return
 	}
 
 	resp, err := CreateMemberService(memberData)
@@ -31,6 +33,7 @@ func CreateMember(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		r, _ := json.Marshal(res)
 		w.Write(r)
+		return
 	}
 
 	res := Response{Status: "OK", Message: "Member Added Successfully", Data: resp}
