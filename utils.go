@@ -198,7 +198,7 @@ func getBorrowId(memberId int, bookId int) (BorrowedBookRecord, error) {
 		BookId:    bookId,
 		MemberId:  memberId,
 		IssueDate: time.Now().Truncate(24 * time.Hour),
-		DueDate:   time.Now().Truncate(24 * time.Hour).Add(7 * time.Hour),
+		DueDate:   time.Now().Truncate(24 * time.Hour).Add(7 * 24 * time.Hour),
 		Fine:      0.0,
 		Status:    false,
 	}

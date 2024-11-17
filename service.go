@@ -71,8 +71,6 @@ func IssueBook(issueBookRequest NeedBook) (any, error) {
 		return nil, errors.New("book is not available right now")
 	}
 
-	book.Count = book.Count -1
-
 	received, err := getBorrowId(member.MemberId, book.BookId)
 	if err != nil {
 		return nil, err
@@ -87,14 +85,14 @@ func IssueBook(issueBookRequest NeedBook) (any, error) {
 
 	memberCol := FindColl("Member")
 	filter := bson.M{"memberId": issueBookRequest.MemberId}
-	update := bson.M{"$set": bson.M{"borrowedBooks" : append(member.BorrowedBooks, received.RecordId)}}
+	update := bson.M{"$push": bson.M{"borrowedBooks" : received.RecordId}}
 	_, err = memberCol.MemberDataCollection.UpdateOne(context.Background(),filter, update)
 	if err != nil {
 		return nil, err
 	}
 
 	bookCol := FindColl("Book")
-	filter = bson.M{"bookId": issueBookRequest.MemberId}
+	filter = bson.M{"bookId": issueBookRequest.BookId}
 	update = bson.M{"$inc": bson.M{"count" : -1}}
 	_, err = bookCol.MemberDataCollection.UpdateOne(context.Background(),filter, update)
 	if err != nil {
@@ -106,3 +104,5 @@ func IssueBook(issueBookRequest NeedBook) (any, error) {
 	return resp, nil
 
 }
+
+
