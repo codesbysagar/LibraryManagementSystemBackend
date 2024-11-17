@@ -8,6 +8,9 @@ import (
 
 func main() {
 
+	LoadConfig()
+	ConnectDB()
+	
 	mx := http.NewServeMux()
 	mx.Handle("POST /CreateMember", http.HandlerFunc(CreateMember))
 

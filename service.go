@@ -23,7 +23,7 @@ func CreateMemberService(member MemberStruct) (any, error) {
 		return nil, err
 	}
 
-	mCollection := NewMemberData("member")
+	mCollection := NewMemberData("Member")
 	finalMember.CreatedAt = time.Now()
 	received, err := mCollection.MemberDataCollection.InsertOne(context.Background(), finalMember)
 	if err != nil {

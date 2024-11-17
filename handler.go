@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -26,6 +27,8 @@ func CreateMember(w http.ResponseWriter, r *http.Request) {
 		w.Write(r)
 		return
 	}
+
+	fmt.Println(memberData)
 
 	resp, err := CreateMemberService(memberData)
 	if err != nil {

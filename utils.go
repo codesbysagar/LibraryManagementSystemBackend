@@ -29,7 +29,7 @@ func LoadConfig() {
 		log.Fatal("DB URI not found")
 	}
 	Config.MongoUri = mongoUri
-	fmt.Println(Config)
+	fmt.Println(Config.MongoUri)
 
 }
 
@@ -37,7 +37,8 @@ var Client *mongo.Client
 
 func ConnectDB() {
 	//connecting to MongoDB server
-	Client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(Config.MongoUri))
+	var err error
+	Client, err = mongo.Connect(context.Background(), options.Client().ApplyURI(Config.MongoUri))
 	if err != nil {
 		log.Fatal("MONGO Connection Failed", err)
 	}
@@ -48,10 +49,14 @@ func ConnectDB() {
 		log.Fatal("Ping Failed", err)
 	}
 
+	if Client == nil {
+		log.Fatal("Client is nil")
+
+	}
 	fmt.Println("Connected to MongoDB!")
 }
 
-// getting collection name
+// getting collection
 func GetCollection(name string) *mongo.Collection {
 	if Client == nil {
 		ConnectDB()
@@ -81,7 +86,7 @@ func MemberValidator(input MemberStruct) error {
 	if input.Contact > 9999999999 || input.Contact < 1000000000 {
 		return errors.New("contact number should be of 10 digits only")
 	}
-	if input.Email == "" || strings.Contains(input.Email, "@") {
+	if input.Email == "" || !strings.Contains(input.Email, "@") {
 		return errors.New("invalid email address")
 	}
 	if input.Password == "" || len(input.Password) < 8 {
