@@ -158,3 +158,78 @@ func BackBook(w http.ResponseWriter, r *http.Request) {
 	w.Write(rd)
 
 }
+
+func GetAllRecordMember(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var member MemberStructDB
+	err := json.NewDecoder(r.Body).Decode(&member)
+	if err != nil {
+		res := Response{Status: "NOT-OK", Message: err.Error()}
+		w.WriteHeader(http.StatusBadRequest)
+		r, _ := json.Marshal(res)
+		w.Write(r)
+		return
+	}
+
+	err = GetAllRecordMemberReqValidator(member)
+	if err != nil {
+		res := Response{Status: "NOT-OK", Message: err.Error()}
+		w.WriteHeader(http.StatusBadRequest)
+		r, _ := json.Marshal(res)
+		w.Write(r)
+		return
+	}
+
+	received, err := GetAllRecordMemberService(member)
+	if err != nil {
+		res := Response{Status: "NOT-OK", Message: err.Error()}
+		w.WriteHeader(http.StatusBadRequest)
+		r, _ := json.Marshal(res)
+		w.Write(r)
+		return
+	}
+
+	res := Response{Status: "OK", Message: "Got All Borrowed Books", Data: received}
+	w.WriteHeader(http.StatusOK)
+	rd, _ := json.Marshal(res)
+	w.Write(rd)
+
+}
+
+func BookIssueRecord(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var book BookStructDB
+	err := json.NewDecoder(r.Body).Decode(&book)
+	if err != nil {
+		res := Response{Status: "NOT-OK", Message: err.Error()}
+		w.WriteHeader(http.StatusBadRequest)
+		r, _ := json.Marshal(res)
+		w.Write(r)
+		return
+	}
+
+	err = BookIdValidator(book.BookId)
+	if err != nil {
+		res := Response{Status: "NOT-OK", Message: err.Error()}
+		w.WriteHeader(http.StatusBadRequest)
+		r, _ := json.Marshal(res)
+		w.Write(r)
+		return
+	}
+
+	received, err := BookIssueRecordService(book)
+	if err != nil {
+		res := Response{Status: "NOT-OK", Message: err.Error()}
+		w.WriteHeader(http.StatusBadRequest)
+		r, _ := json.Marshal(res)
+		w.Write(r)
+		return
+	}
+
+	res := Response{Status: "OK", Message: "Got All Borrowed Books", Data: received}
+	w.WriteHeader(http.StatusOK)
+	rd, _ := json.Marshal(res)
+	w.Write(rd)
+}

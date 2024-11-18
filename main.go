@@ -16,6 +16,8 @@ func main() {
 	mx.Handle("POST /AddNewBook", http.HandlerFunc(AddNewBook))
 	mx.Handle("POST /IssueBook", http.HandlerFunc(GetBook))
 	mx.Handle("POST /ReturnBook", http.HandlerFunc(BackBook))
+	mx.Handle("POST /GetAllRecordMember", http.HandlerFunc(GetAllRecordMember))
+	mx.Handle("POST /BookIssueRecord", http.HandlerFunc(BookIssueRecord))
 
 	fmt.Println("Server started at port :8081")
 	log.Fatal(http.ListenAndServe(":8081", mx))

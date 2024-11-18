@@ -137,6 +137,23 @@ func ReturnValidator(input ReturnBook) error {
 	return nil
 }
 
+func BookIdValidator(input int) error {
+	if input > 99999 || input < 10000 {
+		return errors.New("invalid bookId")
+	}
+	return nil
+}
+
+func GetAllRecordMemberReqValidator(member MemberStructDB) error {
+	if member.MemberId > 999999 || member.MemberId < 100000 {
+		return errors.New("invalid MemberID - It must be of 6 digits")
+	}
+	if len(member.Password) < 8 {
+		return errors.New("invalid Password - It must be greater or equal to 8 letter")
+	}
+	return nil
+}
+
 func SetMemberToStruct(member MemberStruct) (MemberStructDB, error) {
 	Id, err := IdGenerator(6)
 	if err != nil {
@@ -197,7 +214,7 @@ func FindBook(Id int) (BookStructDB, error) {
 	return book, nil
 }
 
-func FindRecord(Id int) (BorrowedBookRecord, error){
+func FindRecord(Id int) (BorrowedBookRecord, error) {
 	borrowedBookCol := FindColl("BorrowedBook")
 	var BorrowedBook BorrowedBookRecord
 	err := borrowedBookCol.MemberDataCollection.FindOne(context.Background(), bson.M{"recordId": Id}).Decode(&BorrowedBook)
@@ -205,6 +222,33 @@ func FindRecord(Id int) (BorrowedBookRecord, error){
 		return BorrowedBookRecord{}, errors.New("RecordId not found")
 	}
 	return BorrowedBook, nil
+}
+
+func FindAllRecord(Id int) ([]BorrowedBookRecord, error) {
+	borrowedBookCol := FindColl("BorrowedBook")
+	var BorrowedBooks []BorrowedBookRecord
+	startDate := time.Now().Truncate(24 * time.Hour).Add(-7 * 24 * time.Hour)
+	endDate := time.Now().Truncate(24 * time.Hour).Add(-1 * 24 * time.Hour)
+	filter := bson.M{
+		"bookId": Id,
+		"status": false,
+		"issueDate": bson.M{
+			"$gte": startDate,
+			"$lte": endDate,
+		},
+	}
+	cursor, err := borrowedBookCol.MemberDataCollection.Find(context.Background(), filter)
+	if err != nil {
+		return []BorrowedBookRecord{}, errors.New("no book borrowed")
+	}
+
+	for cursor.Next(context.Background()) {
+		var BorrowedBook BorrowedBookRecord
+		cursor.Decode(&BorrowedBook)
+		BorrowedBooks = append(BorrowedBooks, BorrowedBook)
+	}
+
+	return BorrowedBooks, nil
 }
 
 func getBorrowId(memberId int, bookId int) (BorrowedBookRecord, error) {
@@ -226,13 +270,13 @@ func getBorrowId(memberId int, bookId int) (BorrowedBookRecord, error) {
 	return BorrowedBook, nil
 }
 
-func CalculateFine(DueDate time.Time) (float64){
-	
+func CalculateFine(DueDate time.Time) float64 {
+
 	CurrentDate := time.Now().Truncate(24 * time.Hour)
 	duration := CurrentDate.Sub(DueDate)
-	days := int(duration.Hours()/24)
-	if days >0 {
-		return float64(days*100)
+	days := int(duration.Hours() / 24)
+	if days > 0 {
+		return float64(days * 100)
 	}
 
 	return 0

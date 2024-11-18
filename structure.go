@@ -60,13 +60,41 @@ type NeedBook struct {
 }
 
 type ReturnBook struct {
-	MemberId int    `json:"member_id,omitempty" bson:"member_id,omitempty"`
+	MemberId int    `json:"memberId,omitempty" bson:"member_id,omitempty"`
 	Password string `json:"password,omitempty" bson:"password,omitempty"`
-	RecordId int    `json:"record_id,omitempty" bson:"record_id,omitempty"`
+	RecordId int    `json:"recordId,omitempty" bson:"record_id,omitempty"`
 }
 
 type Response struct {
 	Status  string      `json:"status,omitempty"`
 	Message string      `json:"message,omitempty"`
 	Data    interface{} `json:"data,omitempty"`
+}
+
+type GetAllRecordStruct struct {
+	BookId    int       `json:"bookId,omitempty" bson:"bookId,omitempty"`
+	Title     string    `json:"title,omitempty" bson:"title,omitempty"`
+	Author    string    `json:"author,omitempty" bson:"author,omitempty"`
+	Genre     string    `json:"genre,omitempty" bson:"genre,omitempty"`
+	IssueDate time.Time `json:"issueDate,omitempty" bson:"issueDate,omitempty"`
+	DueDate   time.Time `json:"dueDate,omitempty" bson:"dueDate,omitempty"`
+}
+
+type BookIssueStruct struct {
+	RecordId  int       `json:"recordId,omitempty" bson:"recordId,omitempty"`
+	MemberId  int       `json:"memberId,omitempty" bson:"memberId,omitempty"`
+	FullName  string    `json:"fullName,omitempty" bson:"fullName,omitempty"`
+	Contact   int       `json:"contact,omitempty" bson:"contact,omitempty"`
+	Email     string    `json:"email,omitempty" bson:"email,omitempty"`
+	IssueDate time.Time `json:"issueDate,omitempty" bson:"issueDate,omitempty"`
+	DueDate   time.Time `json:"dueDate,omitempty" bson:"dueDate,omitempty"`
+}
+
+type SuperBookStruct struct {
+	BookId      int             `json:"bookId,omitempty" bson:"bookId,omitempty"`
+	Title       string          `json:"title,omitempty" bson:"title,omitempty"`
+	Author      string          `json:"author,omitempty" bson:"author,omitempty"`
+	Quantity    int             `json:"quantity,omitempty" bson:"quantity,omitempty"`
+	Count       int             `json:"count,omitempty" bson:"count,omitempty"`
+	IssueRecord []BookIssueStruct `json:"issueRecord,omitempty"`
 }

@@ -177,3 +177,69 @@ func ReturnBookService(returnBook ReturnBook) (any, error) {
 
 	return updateDoc, nil
 }
+
+func GetAllRecordMemberService(input MemberStructDB) (any, error) {
+	member, err := FindMember(input.MemberId)
+	if err != nil {
+		return nil, err
+	}
+	if member.Password != input.Password {
+		return nil, errors.New("incorrect password")
+	}
+
+	if member.BorrowedBooks == nil {
+		return nil, errors.New("No book currently borrowed")
+	}
+
+	var AllBorrowData []GetAllRecordStruct
+	for _, Record := range member.BorrowedBooks {
+		receivedRecord, _ := FindRecord(Record)
+		receivedBook, _ := FindBook(receivedRecord.BookId)
+		AllBorrowData = append(AllBorrowData, GetAllRecordStruct{
+			BookId:    receivedRecord.RecordId,
+			Title:     receivedBook.Title,
+			Author:    receivedBook.Author,
+			Genre:     receivedBook.Author,
+			IssueDate: receivedRecord.IssueDate,
+			DueDate:   receivedRecord.DueDate,
+		})
+	}
+	return AllBorrowData, nil
+}
+
+func BookIssueRecordService(input BookStructDB) (any, error) {
+	book, err := FindBook(input.BookId)
+	if err != nil {
+		return nil, err
+	}
+
+	superBooks, err := FindAllRecord(book.BookId)
+	if err != nil {
+		return nil, err
+	}
+
+	var bookRecord []BookIssueStruct
+	for _, Value := range superBooks {
+		member, _ := FindMember(Value.MemberId)
+		bookRecord = append(bookRecord, BookIssueStruct{
+			RecordId:  Value.RecordId,
+			MemberId:  member.MemberId,
+			FullName:  member.FullName,
+			Contact:   member.Contact,
+			Email:     member.Email,
+			IssueDate: Value.IssueDate,
+			DueDate:   Value.DueDate,
+		})
+	}
+	GetAllBook := SuperBookStruct{
+		BookId:      book.BookId,
+		Title:       book.Title,
+		Author:      book.Author,
+		Quantity:    book.Quantity,
+		Count:       book.Count,
+		IssueRecord: bookRecord,
+	}
+
+	return GetAllBook, nil
+
+}
