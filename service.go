@@ -188,7 +188,7 @@ func GetAllRecordMemberService(input MemberStructDB) (any, error) {
 	}
 
 	if member.BorrowedBooks == nil {
-		return nil, errors.New("No book currently borrowed")
+		return nil, errors.New("no book currently borrowed")
 	}
 
 	var AllBorrowData []GetAllRecordStruct

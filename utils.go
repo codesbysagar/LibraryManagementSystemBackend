@@ -160,15 +160,6 @@ func SetMemberToStruct(member MemberStruct) (MemberStructDB, error) {
 		return MemberStructDB{}, err
 	}
 
-	// tempCol := NewMemberData("Member")
-	// var result bson.M
-	// err = tempCol.MemberDataCollection.FindOne(context.Background(),bson.M{"memberId": Id}).Decode(&result)
-	// if err!= nil {
-	// 	if err == mongo.ErrNoDocuments {
-	// 		fmt.Println("Document")
-	// 	}
-	// }
-
 	return MemberStructDB{
 		FullName:      member.FullName,
 		Contact:       member.Contact,
@@ -227,15 +218,11 @@ func FindRecord(Id int) (BorrowedBookRecord, error) {
 func FindAllRecord(Id int) ([]BorrowedBookRecord, error) {
 	borrowedBookCol := FindColl("BorrowedBook")
 	var BorrowedBooks []BorrowedBookRecord
-	startDate := time.Now().Truncate(24 * time.Hour).Add(-7 * 24 * time.Hour)
-	endDate := time.Now().Truncate(24 * time.Hour).Add(-1 * 24 * time.Hour)
+	// startDate := time.Now().Truncate(24 * time.Hour).Add(-7 * 24 * time.Hour)
+	// endDate := time.Now().Truncate(24 * time.Hour).Add(-1 * 24 * time.Hour)
 	filter := bson.M{
 		"bookId": Id,
 		"status": false,
-		"issueDate": bson.M{
-			"$gte": startDate,
-			"$lte": endDate,
-		},
 	}
 	cursor, err := borrowedBookCol.MemberDataCollection.Find(context.Background(), filter)
 	if err != nil {
