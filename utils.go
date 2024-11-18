@@ -226,4 +226,14 @@ func getBorrowId(memberId int, bookId int) (BorrowedBookRecord, error) {
 	return BorrowedBook, nil
 }
 
+func CalculateFine(DueDate time.Time) (float64){
+	
+	CurrentDate := time.Now().Truncate(24 * time.Hour)
+	duration := CurrentDate.Sub(DueDate)
+	days := int(duration.Hours()/24)
+	if days >0 {
+		return float64(days*100)
+	}
 
+	return 0
+}

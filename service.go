@@ -3,10 +3,12 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type MemberData struct {
@@ -75,6 +77,8 @@ func IssueBook(issueBookRequest NeedBook) (any, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	fmt.Println(received)
 
 	resp := make(map[string]interface{})
 	borrowedBookCol := FindColl("BorrowedBook")
@@ -159,14 +163,17 @@ func ReturnBookService(returnBook ReturnBook) (any, error) {
 	update = bson.M{
 		"$set": bson.M{
 			"status":     true,
-			"fine":       143,
+			"fine":       CalculateFine(Borrow.IssueDate),
 			"returnDate": time.Now().Truncate(24 * time.Hour),
 		},
 	}
-	_, err = borrowCol.MemberDataCollection.UpdateOne(context.Background(), filter, update)
+	opts := options.FindOneAndUpdate().SetReturnDocument(options.After).SetProjection(bson.M{"issueDate": 1, "dueDate": 1, "returnDate": 1})
+
+	var updateDoc bson.M
+	err = borrowCol.MemberDataCollection.FindOneAndUpdate(context.Background(), filter, update, opts).Decode(&updateDoc)
 	if err != nil {
 		return nil, err
 	}
 
-	return "Book has been returned Successfully", nil
+	return updateDoc, nil
 }

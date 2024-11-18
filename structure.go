@@ -49,8 +49,8 @@ type BorrowedBookRecord struct {
 	IssueDate  time.Time          `json:"issueDate,omitempty" bson:"issueDate,omitempty"`
 	DueDate    time.Time          `json:"dueDate,omitempty" bson:"dueDate,omitempty"`
 	ReturnDate time.Time          `json:"returnDate,omitempty" bson:"returnDate,omitempty"`
-	Fine       float32            `json:"fine,omitempty" bson:"fine,omitempty"`
-	Status     bool               `json:"status,omitempty" bson:"status,omitempty"`
+	Fine       float64            `json:"fine" bson:"fine"`
+	Status     bool               `json:"status" bson:"status"`
 }
 
 type NeedBook struct {

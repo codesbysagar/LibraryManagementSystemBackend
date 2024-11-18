@@ -152,7 +152,7 @@ func BackBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := Response{Status: "OK", Message: received.(string)}
+	res := Response{Status: "OK", Message: "Book Return Successfully", Data: received}
 	w.WriteHeader(http.StatusOK)
 	rd, _ := json.Marshal(res)
 	w.Write(rd)
