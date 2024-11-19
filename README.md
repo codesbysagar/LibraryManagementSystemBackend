@@ -193,7 +193,11 @@ A comprehensive **Library Management System** built in **Go**, designed to manag
 
 ## Screenshots
 
-<img src="https://github.com/codesbysagar/LibraryManagementSystemBackend/blob/main/Diagrams/LMS-BookEntry.png" alt="Library Screenshot" width="300" height="424"/>
+<img src="https://github.com/codesbysagar/LibraryManagementSystemBackend/blob/main/Diagrams/LMS-BookEntry.png" alt="LMS-BookEntry" width="300" height="424"/>
+<img src="https://github.com/codesbysagar/LibraryManagementSystemBackend/blob/main/Diagrams/LMS-CreateNewMember.png" alt="LMS-CreateNewMember" width="300" height="424"/>
+<img src="https://github.com/codesbysagar/LibraryManagementSystemBackend/blob/main/Diagrams/LMS-Database%20structure.png" alt="LMS-Database%20structure" width="300" height="424"/>
+<img src="https://github.com/codesbysagar/LibraryManagementSystemBackend/blob/main/Diagrams/LMS-IssuaBook.png" alt="LMS-IssuaBook" width="300" height="424"/>
+<img src="https://github.com/codesbysagar/LibraryManagementSystemBackend/blob/main/Diagrams/LMS-ReturnBook.png" alt="LMS-ReturnBook" width="300" height="424"/>
 
 
 
