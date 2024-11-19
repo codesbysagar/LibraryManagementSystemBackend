@@ -193,7 +193,7 @@ A comprehensive **Library Management System** built in **Go**, designed to manag
 
 ## Screenshots
 
-<img src="https://github.com/codesbysagar/LibraryManagementSystemBackend/blob/main/Diagrams/LMS-BookEntry.png" alt="Library Screenshot" width="600" height="400"/>
+<img src="https://github.com/codesbysagar/LibraryManagementSystemBackend/blob/main/Diagrams/LMS-BookEntry.png" alt="Library Screenshot" width="300" height="424"/>
 
 
 
